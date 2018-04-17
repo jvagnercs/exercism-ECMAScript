@@ -3,15 +3,15 @@ class Cipher {
     this.key = key
   }
 
-  LOWAY = "a"
-  LOWZED = "z"
-  HIGHAY = "A"
-  HIGHZED = "Z"
+  LOWAY() { return 'a' }
+  LOWZED() { return 'z' }
+  HIGHAY() { return 'A' }
+  HIGHZED() { return 'Z' }
 
-  checkLower = c => c >= LOWAY && c <= LOWZED
-  checkUpper = c => c >= HIGHAY && c <= HIGHZED
-    
-  encode = unCiphered => {
+  checkLower(c) { return c >= this.LOWAY() && c <= this.LOWZED()}
+  checkUpper(c) { return c >= this.HIGHAY() && c <= this.HIGHZED()}
+
+  encode(unCiphered) {
     // proceeds only if input is not null
     if (unCiphered === null || unCiphered === undefined) return "\nProper usage:\n\tencode('string')\n"
   
@@ -21,9 +21,9 @@ class Cipher {
     for (let key in unCiphered) {
       const individualChar = unCiphered[key]
       // check if the char is either lower or upper case
-      if(checkLower(individualChar) || checkUpper(individualChar)) {
+      if(this.checkLower(individualChar) || this.checkUpper(individualChar)) {
         // cipherChar is called to encrypt this single char
-        const cipheredChar = cipherChar(individualChar)
+        const cipheredChar = this.cipherChar(individualChar)
         // push it into array
         ciphered.push(String.fromCharCode(cipheredChar))
       } else {
@@ -34,14 +34,14 @@ class Cipher {
     // prints the now encrypted string
     return ciphered.join('')
   }
-       
-  decode = ciphered => {
+
+  decode(ciphered) {
     if (ciphered === null || ciphered === undefined) return "\nProper usage:\n\tdecode('string')\n"
   
-    let deciphered = []
+    const deciphered = []
     for (let key in ciphered) {
-      if(checkLower(ciphered[key]) || checkUpper(ciphered[key])) {
-        deciphered.push(String.fromCharCode(deCipherChar(ciphered[key])))
+      if (this.checkLower(ciphered[key]) || this.checkUpper(ciphered[key])) {
+        deciphered.push(String.fromCharCode(this.deCipherChar(ciphered[key])))
       } else {
         deciphered.push(ciphered[key])
       }
@@ -49,38 +49,35 @@ class Cipher {
     return deciphered.join('')
   }
 
-  getBoundaries = c => {
-    let charBoundaries = []
-    if (checkLower(c)) {
-      charBoundaries.push(LOWAY.charCodeAt(0))
-      charBoundaries.push(LOWZED.charCodeAt(0))
+  getBoundaries(c) {
+    const charBoundaries = []
+    if (this.checkLower(c)) {
+      charBoundaries.push(this.LOWAY().charCodeAt(0))
+      charBoundaries.push(this.LOWZED().charCodeAt(0))
     } else {
-      charBoundaries.push(HIGHAY.charCodeAt(0))
-      charBoundaries.push(HIGHZED.charCodeAt(0))
+      charBoundaries.push(this.HIGHAY().charCodeAt(0))
+      charBoundaries.push(this.HIGHZED().charCodeAt(0))
     }
     return charBoundaries
   }
-  
-  cipherChar = c => {
-    const [lower_bound, upper_bound] = getBoundaries(c)
+
+  cipherChar(c) {
+    const [lowerBound, upperBound] = this.getBoundaries(c)
     const offset = 3
-    const char_offset = offset + c.charCodeAt(0)
-    if (char_offset > upper_bound) {
-      return lower_bound + char_offset - (upper_bound + 1)
-    } else {
-      return char_offset
+    const charOffset = offset + c.charCodeAt(0)
+    if (charOffset > upperBound) {
+      return lowerBound + (charOffset - (upperBound + 1))
     }
+    return charOffset
   }
   
-  deCipherChar = c => {
-    const [lower_bound, upper_bound] = getBoundaries(c)
+  deCipherChar(c) {
+    const [lowerBound, upperBound] = this.getBoundaries(c)
     const offset = -3
-    const char_offset = offset + c.charCodeAt(0)
-    if (char_offset < lower_bound) {
-      return upper_bound - (lower_bound - 1 - char_offset)
-    } else {
-      return char_offset
+    const charOffset = offset + c.charCodeAt(0)
+    if (charOffset < lowerBound) {
+      return upperBound - (lowerBound - 1 - charOffset)
     }
+    return charOffset
   }
 }
-
